@@ -58,8 +58,8 @@ class OpeningHourSlotTest {
             .isThrownBy { anOpeningHourSlot(weekDays = emptySet()) }
     }
 
-    private fun anOpeningHourSlot(timeFrom: String, timeUntil: String) =
-        OpeningHourSlot(timeFrom, timeUntil, setOf(Mon))
-
-    private fun anOpeningHourSlot(weekDays: WeekDays) = OpeningHourSlot("12:00", "14:00", weekDays)
 }
+
+fun anOpeningHourSlot(timeFrom: String = "12:00", timeUntil: String = "13:00") = OpeningHourSlot(timeFrom, timeUntil, setOf(Mon))
+
+fun anOpeningHourSlot(weekDays: WeekDays) = OpeningHourSlot("12:00", "14:00", weekDays)
