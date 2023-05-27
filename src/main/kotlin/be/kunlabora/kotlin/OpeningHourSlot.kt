@@ -6,9 +6,11 @@ import kotlin.time.Duration.Companion.hours
 data class OpeningHourSlot(val timeFrom: String, val timeUntil: String, val weekDays: WeekDays) {
 
     init {
-        validate { timeUntil.asDuration() - timeFrom.asDuration() >= 1.hours }
+        validate { duration >= 1.hours }
         validate { weekDays.isNotEmpty() }
     }
+
+    val duration get() = timeUntil.asDuration() - timeFrom.asDuration()
 
     private fun validate(predicate: () -> Boolean) {
         if (!predicate()) throw OpeningHourSlotException

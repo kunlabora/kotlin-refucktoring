@@ -1,5 +1,8 @@
 package be.kunlabora.kotlin
 
+import be.kunlabora.kotlin.WeekDay.*
+import kotlin.time.Duration.Companion.hours
+
 data class OpeningHours(
     val slots: List<OpeningHourSlot>,
     private val rules: List<Rule> = emptyList()
@@ -13,9 +16,8 @@ data class OpeningHours(
         evaluate(rules)
     }
 
-    fun replaceSlots(slots: List<OpeningHourSlot>): OpeningHours {
-        return OpeningHours(slots = slots)
-    }
+    fun replaceSlots(slots: List<OpeningHourSlot>) = copy(slots = slots)
+    fun replaceSlots(vararg slots: OpeningHourSlot) = replaceSlots(slots.toList())
 
     private fun evaluate(rules: List<Rule>) {
         rules.forEach { rule -> rule.evaluateAndThrow(this) }
@@ -33,3 +35,23 @@ infix fun Rule.and(other: Rule) = listOf(this,other)
 infix fun List<Rule>.and(other: Rule) = toMutableList().apply { add(other) }
 
 class OpeningHourRuleException(rule: Rule) : Exception("Rule ${rule.javaClass.simpleName} was broken.")
+
+
+val defaultBranchOpeningHours = OpeningHours(
+    OpeningHourSlot(timeFrom = "09:00", timeUntil = "12:00", weekDays = setOf(Mon, Tue, Wed, Thu, Fri)),
+    OpeningHourSlot(timeFrom = "13:00", timeUntil = "17:00", weekDays = setOf(Mon, Tue, Wed, Thu, Fri)),
+    OpeningHourSlot(timeFrom = "14:00", timeUntil = "17:00", weekDays = setOf(Sat)),
+    rules = NoWorkOnSundays and NoSlotsLongerThan4Hours and NoSaturdaySlotsLongerThan3Hours
+)
+
+object NoWorkOnSundays : Rule {
+    override fun evaluate(openingHours: OpeningHours) = openingHours.allWeekdays.none { weekday -> weekday == Sun }
+}
+object NoSlotsLongerThan4Hours : Rule {
+    override fun evaluate(openingHours: OpeningHours) = openingHours.slots.none { slot -> slot.duration > 4.hours }
+}
+object NoSaturdaySlotsLongerThan3Hours : Rule {
+    override fun evaluate(openingHours: OpeningHours) = openingHours.slots
+        .filter { Sat in it.weekDays }
+        .none { slot -> slot.duration > 3.hours }
+}
