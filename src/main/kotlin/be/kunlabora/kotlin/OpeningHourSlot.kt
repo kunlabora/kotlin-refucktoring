@@ -3,22 +3,29 @@ package be.kunlabora.kotlin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
-data class OpeningHourSlot(val timeFrom: String, val timeUntil: String, val weekDays: WeekDays) {
+data class OpeningHourSlot(private val timeFrom: SlotTime, private val timeUntil: SlotTime, val weekDays: WeekDays) {
+
+    constructor(timeFrom: String, timeUntil: String, weekDays: WeekDays) : this(timeFrom.asSlotTime(), timeUntil.asSlotTime(), weekDays)
 
     init {
-        validate { timeFrom.isValidTime && timeUntil.isValidTime }
         validate { duration >= 1.hours }
         validate { weekDays.isNotEmpty() }
     }
 
-    val duration get() = timeUntil.asDuration() - timeFrom.asDuration()
+    val duration get() = timeUntil - timeFrom
+}
 
-    private fun validate(predicate: () -> Boolean) {
-        if (!predicate()) throw OpeningHourSlotException
+data class SlotTime(private val time: String) {
+
+    init {
+        validate { time.isValidTime }
     }
 
-    private fun String.asDuration(): Duration =
-        split(':')
+    operator fun minus(other: SlotTime): Duration =
+        this.asDuration() - other.asDuration()
+
+    private fun asDuration(): Duration =
+        time.split(':')
             .let { (hours, minutes) -> Duration.parse("${hours}h ${minutes}m") }
 
     private val String.isValidTime get() = isCorrectlyFormatted && isWithinTimeConstraints
@@ -29,7 +36,6 @@ data class OpeningHourSlot(val timeFrom: String, val timeUntil: String, val week
     private val String.isWithinTimeConstraints get() =
         split(':')
             .let { (hours, minutes) -> hours <= "24" && minutes <= "60" }
-
 }
 
 enum class WeekDay {
@@ -38,3 +44,8 @@ enum class WeekDay {
 typealias WeekDays = Set<WeekDay>
 
 object OpeningHourSlotException : Exception()
+
+private fun validate(predicate: () -> Boolean) {
+    if (!predicate()) throw OpeningHourSlotException
+}
+private fun String.asSlotTime() = SlotTime(this)
