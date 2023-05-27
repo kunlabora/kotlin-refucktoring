@@ -25,12 +25,12 @@ class OpeningHoursTest {
 
         assertThatExceptionOfType(OpeningHourRuleException::class.java)
             .isThrownBy {
-                openingHours.addSlot(anOpeningHourSlot(weekDays = setOf(WeekDay.Sun)))
+                openingHours.replaceSlots(listOf(expectedSlot, anOpeningHourSlot(weekDays = setOf(WeekDay.Sun))))
             }.withMessage("Rule FailsOnSundays was broken.")
 
         assertThatExceptionOfType(OpeningHourRuleException::class.java)
             .isThrownBy {
-                openingHours.addSlot(anOpeningHourSlot(weekDays = setOf(WeekDay.Mon)))
+                openingHours.replaceSlots(listOf(expectedSlot, anOpeningHourSlot(weekDays = setOf(WeekDay.Mon))))
             }.withMessage("Rule FailsOnMondays was broken.")
 
         assertThat(openingHours.slots).containsExactly(expectedSlot)
