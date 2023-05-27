@@ -11,7 +11,7 @@ data class OpeningHourSlot(val timeFrom: String, val timeUntil: String, val week
     }
 
     private fun validate(predicate: () -> Boolean) {
-        if (!predicate()) throw OpeningHourException
+        if (!predicate()) throw OpeningHourSlotException
     }
 
     private fun String.asDuration(): Duration =
@@ -24,4 +24,4 @@ enum class WeekDay {
 }
 typealias WeekDays = Set<WeekDay>
 
-object OpeningHourException : Exception()
+object OpeningHourSlotException : Exception()

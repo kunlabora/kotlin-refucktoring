@@ -18,21 +18,9 @@ class OpeningHoursTest {
                 OpeningHours(listOf(anOpeningHourSlot()),
                     rules = listOf(AlwaysFails)
                 )
-            }
+            }.withMessage("Rule AlwaysFails was broken.")
     }
 }
 
-data class OpeningHours(private val slots: List<OpeningHourSlot>, private val rules: List<Rule> = emptyList()) {
-    init {
-        rules.forEach {
-            if (!it(this)) {
-                throw Exception("Tis kapot gegaan op rule ${it.javaClass.simpleName}")
-            }
-        }
-    }
-}
-
-
-typealias Rule = (OpeningHours) -> Boolean
-val AlwaysFails : Rule = { openingHours -> false }
-val NeverFails : Rule = { openingHours -> true }
+object AlwaysFails : Rule { override fun evaluate(openingHours: OpeningHours) = false }
+object NeverFails : Rule { override fun evaluate(openingHours: OpeningHours) = true }

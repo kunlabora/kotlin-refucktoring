@@ -27,13 +27,13 @@ class OpeningHourSlotTest {
         "13:01,12:05",
     )
     fun `The timeUntil cannot be before the timeFrom`(timeFrom: String, timeUntil: String) {
-        assertThatExceptionOfType(OpeningHourException::class.java)
+        assertThatExceptionOfType(OpeningHourSlotException::class.java)
             .isThrownBy { anOpeningHourSlot(timeFrom = timeFrom, timeUntil = timeUntil) }
     }
 
     @Test
     fun `The timeUntil cannot be the same as timeFrom`() {
-        assertThatExceptionOfType(OpeningHourException::class.java)
+        assertThatExceptionOfType(OpeningHourSlotException::class.java)
             .isThrownBy { anOpeningHourSlot(timeFrom = "12:00", timeUntil = "12:00") }
     }
 
@@ -43,7 +43,7 @@ class OpeningHourSlotTest {
         "12:10,13:09",
     )
     fun `An OpeningHourSlot should at least be 1 hour`(timeFrom: String, timeUntil: String) {
-        assertThatExceptionOfType(OpeningHourException::class.java)
+        assertThatExceptionOfType(OpeningHourSlotException::class.java)
             .isThrownBy { anOpeningHourSlot(timeFrom = timeFrom, timeUntil = timeUntil) }
     }
 
@@ -54,7 +54,7 @@ class OpeningHourSlotTest {
 
     @Test
     fun `An OpeningHourSlot should apply to at least one day`() {
-        assertThatExceptionOfType(OpeningHourException::class.java)
+        assertThatExceptionOfType(OpeningHourSlotException::class.java)
             .isThrownBy { anOpeningHourSlot(weekDays = emptySet()) }
     }
 
