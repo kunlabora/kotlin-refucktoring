@@ -6,6 +6,7 @@ import kotlin.time.Duration.Companion.hours
 data class OpeningHourSlot(val timeFrom: String, val timeUntil: String, val weekDays: WeekDays) {
 
     init {
+        validate { timeFrom.isValidTime && timeUntil.isValidTime }
         validate { duration >= 1.hours }
         validate { weekDays.isNotEmpty() }
     }
@@ -19,6 +20,16 @@ data class OpeningHourSlot(val timeFrom: String, val timeUntil: String, val week
     private fun String.asDuration(): Duration =
         split(':')
             .let { (hours, minutes) -> Duration.parse("${hours}h ${minutes}m") }
+
+    private val String.isValidTime get() = isCorrectlyFormatted && isWithinTimeConstraints
+
+    private val String.isCorrectlyFormatted get() =
+        "^\\d{2}:\\d{2}\$".toRegex().matches(this)
+
+    private val String.isWithinTimeConstraints get() =
+        split(':')
+            .let { (hours, minutes) -> hours <= "24" && minutes <= "60" }
+
 }
 
 enum class WeekDay {
