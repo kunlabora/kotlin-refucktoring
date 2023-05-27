@@ -4,21 +4,24 @@ data class OpeningHours(
     private val initialSlots: List<OpeningHourSlot>,
     private val rules: List<Rule> = emptyList()
 ) {
+    private val internalSlots: MutableList<OpeningHourSlot> = initialSlots.toMutableList()
+
     constructor(vararg slots: OpeningHourSlot, rules: List<Rule>): this(slots.toList(), rules)
 
-    private val internalSlots: MutableList<OpeningHourSlot> = initialSlots.toMutableList()
     val slots get() = internalSlots
     val allWeekdays get() = slots.flatMap { it.weekDays }
-
 
     init {
         evaluate(rules)
     }
 
     fun addSlot(slot: OpeningHourSlot) {
-        copy(initialSlots = internalSlots + listOf(slot)).evaluate(rules)
+        simulatedOpeningHours(slot).evaluate(rules)
         internalSlots += slot
     }
+
+    private fun simulatedOpeningHours(slot: OpeningHourSlot) =
+        copy(initialSlots = internalSlots + listOf(slot))
 
     private fun evaluate(rules: List<Rule>) {
         rules.forEach { rule -> rule.evaluateAndThrow(this) }
