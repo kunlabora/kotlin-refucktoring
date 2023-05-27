@@ -1,11 +1,23 @@
 package be.kunlabora.kotlin
 
 data class OpeningHours(
-    private val slots: List<OpeningHourSlot>,
+    private val initialSlots: List<OpeningHourSlot>,
     private val rules: List<Rule> = emptyList()
 ) {
+    constructor(vararg slots: OpeningHourSlot, rules: List<Rule>): this(slots.toList(), rules)
+
+    private val internalSlots: MutableList<OpeningHourSlot> = initialSlots.toMutableList()
+    val slots get() = internalSlots
+    val allWeekdays get() = slots.flatMap { it.weekDays }
+
+
     init {
         evaluate(rules)
+    }
+
+    fun addSlot(slot: OpeningHourSlot) {
+        copy(initialSlots = internalSlots + listOf(slot)).evaluate(rules)
+        internalSlots += slot
     }
 
     private fun evaluate(rules: List<Rule>) {
@@ -20,5 +32,7 @@ data class OpeningHours(
 interface Rule {
     fun evaluate(openingHours: OpeningHours) : Boolean
 }
+infix fun Rule.and(other: Rule) = listOf(this,other)
+infix fun List<Rule>.and(other: Rule) = toMutableList().apply { add(other) }
 
 class OpeningHourRuleException(rule: Rule) : Exception("Rule ${rule.javaClass.simpleName} was broken.")

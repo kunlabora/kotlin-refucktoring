@@ -60,6 +60,8 @@ class OpeningHourSlotTest {
 
 }
 
-fun anOpeningHourSlot(timeFrom: String = "12:00", timeUntil: String = "13:00") = OpeningHourSlot(timeFrom, timeUntil, setOf(Mon))
-
-fun anOpeningHourSlot(weekDays: WeekDays) = OpeningHourSlot("12:00", "14:00", weekDays)
+fun anOpeningHourSlot(
+    timeFrom: String = "12:00",
+    timeUntil: String = "13:00",
+    weekDays: WeekDays = setOf(Mon)
+) = OpeningHourSlot(timeFrom, timeUntil, weekDays)
