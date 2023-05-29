@@ -1,6 +1,6 @@
-package be.kunlabora.kotlin
+package be.kunlabora.kotlin.domain
 
-import be.kunlabora.kotlin.WeekDay.*
+import be.kunlabora.kotlin.domain.WeekDay.*
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 

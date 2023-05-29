@@ -1,9 +1,9 @@
-package be.kunlabora.kotlin
+package be.kunlabora.kotlin.domain
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
-data class OpeningHourSlot(private val timeFrom: SlotTime, private val timeUntil: SlotTime, val weekDays: WeekDays) {
+data class OpeningHourSlot(val timeFrom: SlotTime, val timeUntil: SlotTime, val weekDays: WeekDays) {
 
     constructor(timeFrom: String, timeUntil: String, weekDays: WeekDays) : this(timeFrom.asSlotTime(), timeUntil.asSlotTime(), weekDays)
 
@@ -13,7 +13,10 @@ data class OpeningHourSlot(private val timeFrom: SlotTime, private val timeUntil
     }
 
     val duration get() = timeUntil - timeFrom
+    val isAMorningSlot get() = timeUntil <= SlotTime.noon
+    val isAnAfternoonSlot get() = timeFrom > SlotTime.noon
 }
+
 
 data class SlotTime(private val time: String) {
 
@@ -28,6 +31,8 @@ data class SlotTime(private val time: String) {
         time.split(':')
             .let { (hours, minutes) -> Duration.parse("${hours}h ${minutes}m") }
 
+    operator fun compareTo(other: SlotTime): Int = this.asDuration().compareTo(other.asDuration())
+
     private val String.isValidTime get() = isCorrectlyFormatted && isWithinTimeConstraints
 
     private val String.isCorrectlyFormatted get() =
@@ -36,6 +41,12 @@ data class SlotTime(private val time: String) {
     private val String.isWithinTimeConstraints get() =
         split(':')
             .let { (hours, minutes) -> hours <= "24" && minutes <= "60" }
+
+    override fun toString(): String = time
+
+    companion object {
+        val noon: SlotTime = SlotTime("12:00")
+    }
 }
 
 enum class WeekDay {
