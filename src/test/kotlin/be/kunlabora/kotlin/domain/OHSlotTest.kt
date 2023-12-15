@@ -1,6 +1,9 @@
 package be.kunlabora.kotlin.domain
 
-import be.kunlabora.kotlin.domain.WeekDay.*
+import be.kunlabora.kotlin.presentation.OHSlot
+import be.kunlabora.kotlin.presentation.OpeningHourSlotException
+import be.kunlabora.kotlin.presentation.WeekDay.Sat
+import be.kunlabora.kotlin.presentation.WeekDays
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.assertj.core.api.Assertions.assertThatNoException
 import org.junit.jupiter.api.Test
@@ -8,7 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 
-class OpeningHourSlotTest {
+class OHSlotTest {
 
     @ParameterizedTest
     @CsvSource(
@@ -62,7 +65,7 @@ class OpeningHourSlotTest {
 
     @Test
     fun `An OpeningHourSlot can apply to more than one day`() {
-        assertThatNoException().isThrownBy { anOpeningHourSlot(weekDays = setOf(Mon, Tue, Sat)) }
+        assertThatNoException().isThrownBy { anOpeningHourSlot(weekDays = setOf("Mon", "Tue", Sat)) }
     }
 
     @Test
@@ -76,5 +79,5 @@ class OpeningHourSlotTest {
 fun anOpeningHourSlot(
     timeFrom: String = "12:00",
     timeUntil: String = "13:00",
-    weekDays: WeekDays = setOf(Mon)
-) = OpeningHourSlot(timeFrom, timeUntil, weekDays)
+    weekDays: WeekDays = setOf("Mon")
+) = OHSlot(timeFrom, timeUntil, weekDays)
